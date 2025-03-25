@@ -1,46 +1,47 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.Scanner;
 
-public class ManagerTask implements Manager {
+public class ManagerTask implements Manager, Filter, Order {
     private List<Task> tasks;
 
     public ManagerTask() {
         this.tasks = new ArrayList<>();
     }
 
-    public Task createTask(Task task) {
-        if (task.getTitle() == null || task.getTitle().length() < 10) {
-            System.out.println("Erro: Título muito curto, escreva, pelo menos 10 caracteres.");
-            return null;
-        }
 
-        if (task.getDeadline().isBefore(LocalDate.now())) {
-            System.out.println("Erro: A data de vencimento não pode ser antes de hoje.");
-            return null;
-        }
+public Optional<Task> createTask(Task task) {
+    Predicate<Task> validateTitle = newTask -> newTask.getTitle() != null && newTask.getTitle().length() >= 5;
 
+    Predicate<Task> validateDeadline = newTask -> newTask.getDeadline().isAfter(LocalDate.now().minusDays(1));
 
-        if (task.getStatus() == null) {
-            System.out.println("Erro: O status não pode ser nulo. Digite 1 para Pendente, 2 para Em Andamento e 3 para Concluída");
-            return null;
-        }
+    Predicate<Task> validateStatus = newTask -> newTask.getStatus() != null;
 
+    if (validateTitle.and(validateDeadline).and(validateStatus).test(task)) {
         tasks.add(task);
-        return task;
+        return Optional.of(task);
+    }
+    return
+            Optional.empty();
+}
+
+    public List<Task> listTasks(){
+        return List.copyOf(tasks);
     }
 
-        public List<Task> listTasks() {
-            return new ArrayList<>(tasks);
-        }
-
-
-    @Override
-    public long countTask() {
-        return tasks.size();
+    public List<Task> getList(){
+        return List.copyOf(tasks);
     }
+
+    /*public List<Task> filterTasks(Predicate<Task> criterium){
+        return tasks.stream()
+                .filter(criterium)
+                .collect(Collectors.toList());
+    }*/
 
     public List<Task> filterStatus(StatusTask status) {
         return
@@ -49,9 +50,25 @@ public class ManagerTask implements Manager {
                         .collect(Collectors.toList());
     }
 
+    @Override
+    public List orderTasks(Comparator comparator) {
+        return List.of();
+    }
+
     public List<Task> orderDeadline(){
         return tasks.stream()
                 .sorted(Comparator.comparing(Task::getDeadline))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Optional createTask(Object o) {
+        return Optional.empty();
+    }
+
+    @Override
+    public long countTask() {
+        return tasks.size();
+    }
+
 }
