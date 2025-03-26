@@ -1,10 +1,7 @@
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.Scanner;
 
 public class ManagerTask implements Manager, Filter, Order {
     private List<Task> tasks;
@@ -62,13 +59,13 @@ public Optional<Task> createTask(Task task) {
     }
 
     @Override
-    public Optional createTask(Object o) {
-        return Optional.empty();
+    public void createTask() {
+
     }
 
     @Override
-    public long countTask() {
-        return tasks.size();
+    public Optional createTask(Object o) {
+        return Optional.empty();
     }
 
 }

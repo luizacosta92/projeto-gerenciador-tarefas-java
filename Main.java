@@ -6,7 +6,7 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
+        ManagerTask managerTask = new ManagerTask();
 
         System.out.println("\n =====Boas-vindas ao TaskNager seu gerenciador de tarefas====");
 
@@ -14,7 +14,7 @@ public class Main {
         boolean execution = true;
         while (execution) {
             int menuChoice = showMenu();
-            int option = readOption(menuChoice);
+            int option = readOption(menuChoice, managerTask);
             if (option == 5) {
                 System.out.println("Sistema encerrado com sucesso");
                 scanner.close();
@@ -36,9 +36,8 @@ public class Main {
         return option;
     }
 
-    private static int readOption(int option) {
+    private static int readOption(int option, ManagerTask managerTask) {
         try {
-            ManagerTask managerTask = new ManagerTask();
             Scanner scanner = new Scanner(System.in);
 
             switch (option) {
@@ -62,9 +61,9 @@ public class Main {
 
 
                     System.out.println("""
-                            Status:\n
-                            1. Pendente;\n
-                            2. Em andamento;\n
+                            Status:
+                            1. Pendente;
+                            2. Em andamento;
                             3. Concluído;
                             """);
                     // System.out.print("Escolha o status: ");
@@ -83,22 +82,22 @@ public class Main {
 
                 case 2:
                     System.out.println("""
-                            Filtre pelo status:\n
-                            1. Pendente;\n
-                            2. Em andamento;\n
+                            Filtre pelo status:
+                            1. Pendente;
+                            2. Em andamento;
                             3. Concluído;
                             """);
-                    // System.out.print("Escolha o status: ");
 
 
                     Integer statusFilter = scanner.nextInt();
 
-                    managerTask.filterStatus(StatusTask.values()[statusFilter - 1]);
+                    System.out.println(managerTask.filterStatus(StatusTask.values()[statusFilter - 1]));
+
 
                     return 1;
                 case 3:
                     managerTask.orderDeadline();
-                            //.forEach(System.out::println);
+                    System.out.println(managerTask.orderDeadline());;
 
                     return 1;
 
