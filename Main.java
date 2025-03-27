@@ -1,3 +1,4 @@
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
@@ -9,7 +10,7 @@ public class Main {
         ManagerTask managerTask = new ManagerTask();
 
         System.out.println("\n =====Boas-vindas ao TaskNager seu gerenciador de tarefas====");
-
+        System.out.println();
 
         boolean execution = true;
         while (execution) {
@@ -25,12 +26,14 @@ public class Main {
 
 
     private static Integer showMenu() {
-        System.out.println("O que você quer fazer?");
-        System.out.println("1 - Cadastrar nova tarefa");
-        System.out.println("2 - Filtrar tarefa por status");
-        System.out.println("3 - Ordenar tarefa por data");
-        System.out.println("4 - Listar todas as tarefas");
-        System.out.println("5 - Sair do sistema");
+        System.out.println("-------------------------------");
+        System.out.println("| O que você quer fazer?       |");
+        System.out.println("| 1 - Cadastrar nova tarefa    |");
+        System.out.println("| 2 - Filtrar tarefa por status|");
+        System.out.println("| 3 - Ordenar tarefa por data  |");
+        System.out.println("| 4 - Listar todas as tarefas  |");
+        System.out.println("| 5 - Sair do sistema          |");
+        System.out.println("-------------------------------");
         Scanner scannerOption = new Scanner(System.in);
         Integer option = scannerOption.nextInt();
         return option;
@@ -42,42 +45,63 @@ public class Main {
 
             switch (option) {
                 case 1:
-                    System.out.println("\n== Cadastro de Nova Tarefa ==");
+                    System.out.println("\n== Cadastrar Nova Tarefa ==");
 
-                    System.out.print("Título: ");
-                    String title = scanner.nextLine();
+                    String title;
+                    while (true) {
+                        System.out.print("Título: ");
+                        title = scanner.nextLine().trim();
+                        if (title.length() < 5) {
+                            System.out.println("\nErro: O título deve ter no mínimo 5 caracteres.");
+                            continue;
+                        }
+                        break;
+                    }
 
                     System.out.print("Descrição: ");
                     String description = scanner.nextLine();
 
                     LocalDate deadline = null;
-                            System.out.print("Data Limite (yyyy-MM-dd): ");
-                        String dataStr = scanner.nextLine();
+                    while (deadline == null) {
                         try {
-                             deadline = LocalDate.parse(dataStr);
-                        } catch (DateTimeParseException e) {
-                            System.out.println("Formato de data inválido. Use yyyy-MM-dd.");
+                            System.out.print("Data Limite (yyyy-mm-dd): ");
+                            String dataStr = scanner.nextLine();
+                            deadline = LocalDate.parse(dataStr);
+                            if (deadline.isBefore(LocalDate.now())) {
+                                System.out.println("\nErro: A data limite deve ser posterior à data atual.");
+                                deadline = null;
+                                continue;
+                            }
+                        } catch (DateTimeException e) {
+                            System.out.println("\nErro: Formato de data inválido. Use yyyy-mm-dd. ");
                         }
+                    }
 
 
-                    System.out.println("""
-                            Status:
-                            1. Pendente;
-                            2. Em andamento;
-                            3. Concluído;
-                            """);
-                    // System.out.print("Escolha o status: ");
+                    StatusTask status = null;
+                    while (status == null) {
+                        System.out.println("""
+                        📝 Qual o status da tarefa?
+                        1. Pendente;
+                        2. Em andamento;
+                        3. Concluído;
+                        """);
 
-
-                    Integer statusChoice = scanner.nextInt();
-
-                    StatusTask status = StatusTask.values()[statusChoice - 1];
+                        try {
+                            int statusChoice = scanner.nextInt();
+                            status = StatusTask.values()[statusChoice - 1];
+                        } catch (Exception e) {
+                            System.out.println("\nErro: Selecione uma opção válida (1, 2 ou 3).");
+                            scanner.nextLine(); //
+                        }
+                    }
 
 
                     Task newTask = new Task(title, description, status, deadline);
                     managerTask.createTask(newTask);
 
-                    System.out.println("✓ Tarefa cadastrada com sucesso!");
+
+                    System.out.println("✅ Tarefa cadastrada com sucesso!");
                     return 1;
 
                 case 2:
@@ -92,32 +116,36 @@ public class Main {
                     Integer statusFilter = scanner.nextInt();
 
                     System.out.println(managerTask.filterStatus(StatusTask.values()[statusFilter - 1]));
-
-
                     return 1;
-                case 3:
-                    managerTask.orderDeadline();
-                    System.out.println(managerTask.orderDeadline());;
 
+                case 3:
+                    System.out.println("Próximas tarefas a vencer:");
+                    managerTask.orderDeadline();
+                    System.out.println(managerTask.orderDeadline());
                     return 1;
 
                 case 4:
+                    System.out.println("Todas as tarefas cadastradas:");
                     managerTask.getList()
                             .stream()
                             .forEach(System.out::println);
                     return 1;
 
+                case 5:
+                    System.out.println("Encerrando o sistema. Até a próxima!");
+                    scanner.close();
+                    System.exit(0);
+
                 default:
-                    System.out.println("Opção inválida. Digite um número de 1 a 4.");
+                    System.out.println("Opção inválida. Digite um número de 1 a 5.");
+                    System.out.println("******************************************");
                     return -1;
 
             }
-           // System.out.println("Programa finalizado!");
-           // scanner.close();
-          //  return 1;
 
         } catch (NumberFormatException e) {
-            return -1;
+            System.out.println("Erro inesperado: " + e.getMessage());
+            return option;
         }
     }
 }
