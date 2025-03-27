@@ -3,7 +3,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class ManagerTask implements Manager, Filter, Order {
+public class ManagerTask implements Filter, Order {
     private List<Task> tasks;
 
     public ManagerTask() {
@@ -48,12 +48,6 @@ public Optional<Task> createTask(Task task) {
         return List.copyOf(tasks);
     }
 
-    /*public List<Task> filterTasks(Predicate<Task> criterium){
-        return tasks.stream()
-                .filter(criterium)
-                .collect(Collectors.toList());
-    }*/
-
     public List<Task> filterStatus(StatusTask status) {
         return
                 tasks.stream()
@@ -68,10 +62,6 @@ public Optional<Task> createTask(Task task) {
                         .collect(Collectors.toList());
     }
 
-    @Override
-    public List orderTasks(Comparator comparator) {
-        return List.of();
-    }
 
     public List<Task> orderDeadline(){
         return tasks.stream()
@@ -79,14 +69,6 @@ public Optional<Task> createTask(Task task) {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public void createTask() {
 
-    }
-
-    @Override
-    public Optional createTask(Object o) {
-        return Optional.empty();
-    }
 
 }

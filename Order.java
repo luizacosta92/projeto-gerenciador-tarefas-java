@@ -5,5 +5,4 @@ public interface Order<Task> {
 
     List<Task> orderDeadline();
 
-
 }
